@@ -89,7 +89,6 @@ sed -i "{$stable_regex}" src/readme.txt
 # Stable tag in package.json
 package_regex='s/\(\"version\"\: \?\)\"[0-9\.]\+\"/\1"'"$ver"\"/
 sed -i "{$package_regex}" package.json
-exit
 
 # Upgrade Notice and Changelog
 # Only add it if it hasn't already been added.
