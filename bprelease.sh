@@ -109,6 +109,10 @@ fi
 
 echo "Version numbers bumped to $ver."
 
+# TEMP: Don't run jsvalidate
+#sed -i "s/'jsvalidate\:src',//" Gruntfile.js
+#sed -i "s/'jsvalidate\:build',//" Gruntfile.js
+
 # Commit version bumps.
 commit_message_bump="Bumping version numbers to $ver."
 if [ $dryrun -eq 0 ]; then
