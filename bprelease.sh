@@ -60,7 +60,7 @@ if [ $use_existing_checkouts -eq 0 ]; then
 	fi
 
 	# Get a checkout of the branch.
-	svn co http://buddypress.svn.wordpress.org/branches/$branch bp
+	svn co --ignore-externals http://buddypress.svn.wordpress.org/branches/$branch bp
 else
 	if [[ ! -d 'bp' ]] || [[ ! -f 'bp/Gruntfile.js' ]]; then
 		echo "No checkout found. Please try again without the -e flag."
