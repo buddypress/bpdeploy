@@ -136,7 +136,7 @@ fi
 npm install
 grunt build # Not 'release', because we don't want bbPress.
 
-# Get a checkout of plugins.svn trunk.
+# Get a checkout of plugins.svn branch.
 cd ..
 
 if [ $use_existing_checkouts -eq 0 ]; then
@@ -145,11 +145,23 @@ if [ $use_existing_checkouts -eq 0 ]; then
 		rm -rf ./wporg
 	fi
 
-	svn co --ignore-externals http://plugins.svn.wordpress.org/buddypress/trunk wporg
+	remote_branches=$(svn ls http://plugins.svn.wordpress.org/buddypress/branches)
+	if grep -q $branch <<< "$remote_branches"; then
+		echo "Remote branch $branch exists"
+	else
+		echo "Remote branch $branch does not exist. Creating from trunk..."
+		svn cp http://plugins.svn.wordpress.org/buddypress/trunk http://plugins.svn.wordpress.org/buddypress/branches/$branch -m "Creating $branch branch from trunk."
+	fi
+
+	svn co --ignore-externals http://plugins.svn.wordpress.org/buddypress/branches/$branch wporg
 fi
 
 # Sync the changes from the bporg checkout to the wporg checkout.
-rsync -r --exclude='.svn' bp/src/ wporg/
+mv wporg/.svn ./svn-files
+rm -rf wporg/*
+cp -R bp/build/* wporg/
+mv ./svn-files wporg/.svn
+#rsync -r --exclude='.svn' bp/src/ wporg/
 
 # Remove bbPress from the checkout and set the external (should already be done, but just in case).
 cd wporg
@@ -161,9 +173,9 @@ svn diff readme.txt > ../readme.diff
 svn revert readme.txt
 svn status
 
-# Commit to trunk.
+# Commit to branch.
 echo ''
-echo "Committing to plugins.svn.wordpress.org trunk."
+echo "Committing to plugins.svn.wordpress.org $branch branch."
 if [ $dryrun -eq 0 ]; then
 	read -n 1 -p "Ready to commit and tag? (y/n)? " answer
 	echo ""
@@ -181,9 +193,9 @@ fi
 commit_message_tag="Create tag $ver."
 echo "Creating tag."
 if [ $dryrun -eq 0 ]; then
-	svn cp http://plugins.svn.wordpress.org/buddypress/trunk http://plugins.svn.wordpress.org/buddypress/tags/$ver -m "$commit_message_tag"
+	svn cp http://plugins.svn.wordpress.org/buddypress/branches/$branch http://plugins.svn.wordpress.org/buddypress/tags/$ver -m "$commit_message_tag"
 else
-	echo "DRY RUN: svn cp http://plugins.svn.wordpress.org/buddypres/trunk http://plugins.svn.wordpress.org/tags/$ver -m \"$commit_message_tag\""
+	echo "DRY RUN: svn cp http://plugins.svn.wordpress.org/buddypres/branches/$branch http://plugins.svn.wordpress.org/tags/$ver -m \"$commit_message_tag\""
 fi
 
 # Then bump stable tag in trunk
