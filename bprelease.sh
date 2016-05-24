@@ -101,9 +101,9 @@ if [ $already -eq 0 ]; then
 	sed -i "{$upgrade_regex}" src/readme.txt
 
 	# $this->db_version in bp-loader.php should also only be updated when necessary.
-	lastrev="$(svn log -l 1 http://buddypress.svn.wordpress.org | grep -oP "^r([0-9]+) \| ")"
-	lastrev="$(sed -e "s/[^0-9]//g" <<< "$lastrev")"
-	db_ver_regex="s/\(\$this\->db_version\s\+= \)[0-9\.]\+/\1""$lastrev"/
+	#lastrev="$(svn log -l 1 http://buddypress.svn.wordpress.org | grep -oP "^r([0-9]+) \| ")"
+	#lastrev="$(sed -e "s/[^0-9]//g" <<< "$lastrev")"
+	#db_ver_regex="s/\(\$this\->db_version\s\+= \)[0-9\.]\+/\1""$lastrev"/
 	sed -i "{$db_ver_regex}" src/bp-loader.php
 fi
 
