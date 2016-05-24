@@ -171,6 +171,11 @@ svn propset svn:externals 'bbpress https://bbpress.svn.wordpress.org/tags/1.2/' 
 # Before committing, roll back the readme, so that the stable tag is not changed.
 svn diff readme.txt > ../readme.diff
 svn revert readme.txt
+
+# Clean up the index.
+svn add --force .
+svn rm $( svn status | sed -e '/^!/!d' -e 's/^!//' )
+
 svn status
 
 # Commit to branch.
